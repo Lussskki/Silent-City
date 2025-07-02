@@ -1,12 +1,14 @@
 #include "Player.hpp"
 
-Player::Player() {
+Player::Player() 
+{
     shape.setSize({ 20.f, 20.f });
     shape.setFillColor(sf::Color::Cyan);
     shape.setPosition(500.f, 600.f);
 }
 
-void Player::handleInput() {
+void Player::handleInput() 
+{
     velocity.x = 0.f;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -15,13 +17,15 @@ void Player::handleInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
         velocity.x += moveSpeed;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && onGround) {
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::J) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) && onGround) 
+    {
         velocity.y = jumpPower;
         onGround = false;
     }
 }
 
-void Player::update(float dt, const std::vector<Platform>& platforms) {
+void Player::update(float dt, const std::vector<Platform>& platforms) 
+{
     velocity.y += gravity * dt;
 
     // Predict vertical movement
