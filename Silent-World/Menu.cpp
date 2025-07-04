@@ -58,7 +58,7 @@ int Menu::run(sf::RenderWindow& window) {
                         else
                             window.create(sf::VideoMode(800, 600), "Silent World", sf::Style::Close);
 
-                        refresh(window);  // ✅ FIXED: refresh menu display
+                        refresh(window);  // FIXED: refresh menu display
                     }
                     if (selectedIndex == 2) return 2; // Exit
                 }
