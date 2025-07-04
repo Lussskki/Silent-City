@@ -2,25 +2,21 @@
 #include <fstream>
 #include <string>
 
-Game::Game()
-    : window(sf::VideoMode(800, 600), "Silent World")
+Game::Game(sf::RenderWindow& win)
+    : window(win)
 {
-    platforms.push_back(Platform(sf::Vector2f(170.f, 550.f), sf::Vector2f(100.f, 20.f), sf::Color::Red));    // red
-    platforms.push_back(Platform(sf::Vector2f(600.f, 550.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));   // blue
-    platforms.push_back(Platform(sf::Vector2f(400.f, 500.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));  // green
+    platforms.push_back(Platform(sf::Vector2f(170.f, 550.f), sf::Vector2f(100.f, 20.f), sf::Color::Red));
+    platforms.push_back(Platform(sf::Vector2f(600.f, 550.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));
+    platforms.push_back(Platform(sf::Vector2f(400.f, 500.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));
 
-    // second line 
-    platforms.push_back(Platform(sf::Vector2f(170.f, 450.f), sf::Vector2f(100.f, 20.f), sf::Color::Magenta));    // magneta
-    platforms.push_back(Platform(sf::Vector2f(600.f, 450.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));   // blue
-    platforms.push_back(Platform(sf::Vector2f(400.f, 400.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));  // green
-
-    // third line 
-    platforms.push_back(Platform(sf::Vector2f(170.f, 350.f), sf::Vector2f(100.f, 20.f), sf::Color::Magenta));    // magneta
-    platforms.push_back(Platform(sf::Vector2f(600.f, 350.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));   // blue
-    platforms.push_back(Platform(sf::Vector2f(400.f, 300.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));  // green
+    platforms.push_back(Platform(sf::Vector2f(170.f, 450.f), sf::Vector2f(100.f, 20.f), sf::Color::Magenta));
+    platforms.push_back(Platform(sf::Vector2f(600.f, 450.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));
+    platforms.push_back(Platform(sf::Vector2f(400.f, 400.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));
+    
+    platforms.push_back(Platform(sf::Vector2f(170.f, 350.f), sf::Vector2f(100.f, 20.f), sf::Color::Magenta));
+    platforms.push_back(Platform(sf::Vector2f(600.f, 350.f), sf::Vector2f(200.f, 20.f), sf::Color::Blue));
+    platforms.push_back(Platform(sf::Vector2f(400.f, 300.f), sf::Vector2f(150.f, 20.f), sf::Color::Yellow));
 }
-
-
 
 void Game::run() {
     while (window.isOpen()) {
@@ -40,28 +36,18 @@ void Game::processEvents() {
     }
 }
 
-
 void Game::update(float dt) {
     player.update(dt, platforms);
 
     std::ifstream file("command.txt");
     std::string command;
     if (file >> command) {
-        if (command == "jump") {
-            player.voiceJump();  // You’ll write this function
-        }
-        if (command == "left") {
-            player.voiceMove(-1);  // move left
-        }
-        if (command == "right") {
-            player.voiceMove(1);   // move right
-        }
-
-        // Clear the file after use
-        std::ofstream clear("command.txt", std::ios::trunc);
+        if (command == "jump") player.voiceJump();
+        else if (command == "left") player.voiceMove(-1);
+        else if (command == "right") player.voiceMove(1);
+        std::ofstream clear("command.txt", std::ios::trunc); // Clear file
     }
 }
-
 
 void Game::render() {
     window.clear();
