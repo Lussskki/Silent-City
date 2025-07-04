@@ -1,6 +1,5 @@
 ﻿#include "Options.hpp"
 
-
 bool Options::fullscreen = false;
 
 Options::Options(sf::RenderWindow& windowRef) {
@@ -10,7 +9,10 @@ Options::Options(sf::RenderWindow& windowRef) {
 
     backgroundTexture.loadFromFile("options-jimi-hendrix.png");
     backgroundSprite.setTexture(backgroundTexture);
-    backgroundSprite.setScale(800.f / backgroundTexture.getSize().x, 600.f / backgroundTexture.getSize().y);
+    backgroundSprite.setScale(
+        static_cast<float>(window->getSize().x) / backgroundTexture.getSize().x,
+        static_cast<float>(window->getSize().y) / backgroundTexture.getSize().y
+    );
 
     updateItems();
 }
@@ -38,6 +40,7 @@ int Options::run(sf::RenderWindow& window) {
             if (event.type == sf::Event::Closed)
                 return 2;
 
+            // Keyboard input
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Up)
                     moveUp();
@@ -52,6 +55,35 @@ int Options::run(sf::RenderWindow& window) {
                 else if (event.key.code == sf::Keyboard::Escape)
                     return 1;
             }
+
+            // Mouse hover
+            if (event.type == sf::Event::MouseMoved) {
+                sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                for (int i = 0; i < items.size(); ++i) {
+                    if (items[i].getGlobalBounds().contains(mousePos)) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Mouse click
+            if (event.type == sf::Event::MouseButtonPressed &&
+                event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                if (items[selectedIndex].getGlobalBounds().contains(mousePos)) {
+                    toggleOption();
+                }
+            }
+        }
+
+        // Hover color update
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        for (int i = 0; i < items.size(); ++i) {
+            if (i == selectedIndex || items[i].getGlobalBounds().contains(mousePos))
+                items[i].setFillColor(selectedColor);
+            else
+                items[i].setFillColor(normalColor);
         }
 
         draw(window);
@@ -61,7 +93,7 @@ int Options::run(sf::RenderWindow& window) {
 }
 
 void Options::draw(sf::RenderWindow& window) {
-    window.clear(sf::Color::Black);
+    window.clear();
     window.draw(backgroundSprite);
     for (const auto& item : items)
         window.draw(item);
@@ -86,12 +118,11 @@ void Options::adjustVolume(int delta) {
     musicVolume += delta;
     if (musicVolume > 100) musicVolume = 100;
     if (musicVolume < 0) musicVolume = 0;
-
     updateItems();
 }
 
 void Options::toggleOption() {
-    if (selectedIndex == 1) { // Fullscreen toggle
+    if (selectedIndex == 1) { // Toggle fullscreen
         fullscreen = !fullscreen;
 
         sf::Vector2u texSize = backgroundTexture.getSize();
