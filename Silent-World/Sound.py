@@ -26,6 +26,7 @@ def listen_and_trigger():
                 jump_sound.play()
                 f.write("jump\n")
             elif "left" in command.lower():
+                print("left commands sent")
                 f.write("left\n")
             elif "right" in command.lower():
                 f.write("right\n")
