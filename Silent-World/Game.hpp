@@ -6,14 +6,15 @@
 
 class Game {
 public:
-    Game();
+    Game(sf::RenderWindow& win); 
     void run();
 
 private:
-    sf::RenderWindow window;
+    sf::RenderWindow& window; 
     Player player;
     std::vector<Platform> platforms;
     sf::Clock clock;
+
 
     void processEvents();
     void update(float dt);
