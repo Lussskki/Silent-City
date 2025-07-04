@@ -1,23 +1,19 @@
-#include "Game.hpp"
+#include <SFML/Graphics.hpp>
 #include "Menu.hpp"
-#include <iostream>
+#include "Game.hpp"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Silent World - Menu");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Silent City");
 
-    Menu menu(800, 600);
-    int selected = menu.run(window);
+    Menu menu(window);
+    int selected = menu.run(window);  // Runs inside same window
 
-    if (selected == 0) { // Play selected
-        Game game;
+    if (selected == 0) { // Play
+        Game game(window);
         game.run();
     }
-    else if (selected == 1) {
-        // You can later add settings/options screen here
-        std::cout << "Options selected (not yet implemented).\n";
-    }
     else if (selected == 2) {
-        std::cout << "Exiting...\n";
+        window.close();
     }
 
     return 0;
