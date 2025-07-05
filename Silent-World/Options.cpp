@@ -5,6 +5,8 @@ bool Options::fullscreen = false;
 Options::Options(sf::RenderWindow& windowRef) {
     window = &windowRef;
 
+
+
     font.loadFromFile("arial.ttf");
 
     backgroundTexture.loadFromFile("options-jimi-hendrix.png");
@@ -14,18 +16,24 @@ Options::Options(sf::RenderWindow& windowRef) {
         static_cast<float>(window->getSize().y) / backgroundTexture.getSize().y
     );
 
+    // Initialize language state
+    isEnglish = true;
+    language = "English (Default)";
+
     updateItems();
 }
 
 void Options::updateItems() {
     items.clear();
+
     std::vector<std::string> texts = {
         "Music Volume: " + std::to_string(musicVolume),
         std::string("Fullscreen: ") + (fullscreen ? "On" : "Off"),
+        std::string("Language: ") + language,
         "Back"
     };
 
-    for (int i = 0; i < texts.size(); ++i) {
+    for (int i = 0; i < (int)texts.size(); ++i) {
         sf::Text text(texts[i], font, 30);
         text.setPosition(100.f, 150.f + i * 60.f);
         text.setFillColor(i == selectedIndex ? selectedColor : normalColor);
@@ -34,13 +42,14 @@ void Options::updateItems() {
 }
 
 int Options::run(sf::RenderWindow& window) {
+    shouldExit = false;
+
     while (window.isOpen() && !shouldExit) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 return 2;
 
-            // Keyboard input
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Up)
                     moveUp();
@@ -56,20 +65,18 @@ int Options::run(sf::RenderWindow& window) {
                     return 1;
             }
 
-            // Mouse hover
             if (event.type == sf::Event::MouseMoved) {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                for (int i = 0; i < items.size(); ++i) {
+                for (int i = 0; i < (int)items.size(); ++i) {
                     if (items[i].getGlobalBounds().contains(mousePos)) {
                         selectedIndex = i;
+                        updateItems();
                         break;
                     }
                 }
             }
 
-            // Mouse click
-            if (event.type == sf::Event::MouseButtonPressed &&
-                event.mouseButton.button == sf::Mouse::Left) {
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 if (items[selectedIndex].getGlobalBounds().contains(mousePos)) {
                     toggleOption();
@@ -77,9 +84,9 @@ int Options::run(sf::RenderWindow& window) {
             }
         }
 
-        // Hover color update
+        // Update hover colors
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-        for (int i = 0; i < items.size(); ++i) {
+        for (int i = 0; i < (int)items.size(); ++i) {
             if (i == selectedIndex || items[i].getGlobalBounds().contains(mousePos))
                 items[i].setFillColor(selectedColor);
             else
@@ -89,7 +96,7 @@ int Options::run(sf::RenderWindow& window) {
         draw(window);
     }
 
-    return 1;
+    return 1; // Return to menu
 }
 
 void Options::draw(sf::RenderWindow& window) {
@@ -140,7 +147,11 @@ void Options::toggleOption() {
             static_cast<float>(window->getSize().y) / texSize.y
         );
     }
-    else if (selectedIndex == 2) {
+    else if (selectedIndex == 2) { // Toggle language
+        isEnglish = !isEnglish;
+        language = isEnglish ? "English (Default)" : "Georgian";
+    }
+    else if (selectedIndex == 3) { // Back
         shouldExit = true;
     }
 
