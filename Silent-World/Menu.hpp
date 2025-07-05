@@ -25,5 +25,5 @@ private:
     sf::Color normalColor = sf::Color(185, 100, 210);   // Psychedelic Plum
 
     void refresh(sf::RenderWindow& window); // update background + view
-
+    
 };
