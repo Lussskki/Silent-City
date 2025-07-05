@@ -9,27 +9,31 @@ Menu::Menu(sf::RenderWindow& window) {
     backgroundSprite.setTexture(backgroundTexture);
     backgroundSprite.setScale(800.f / backgroundTexture.getSize().x, 600.f / backgroundTexture.getSize().y);
 
+    sf::Vector2u winSize = window.getSize();
+    float spacing = 50.f;
+    float totalHeight = texts.size() * spacing;
+    float startY = winSize.y - totalHeight - 50.f;
+
     for (int i = 0; i < texts.size(); ++i) {
         sf::Text text(texts[i], font, 36);
-        text.setPosition(50.f, 450.f + i * 50.f);
+        text.setPosition(50.f, startY + i * spacing);
         text.setFillColor(normalColor);
         options.push_back(text);
     }
 
-    // First selected item
     options[selectedIndex].setFillColor(selectedColor);
 }
 
 int Menu::run(sf::RenderWindow& window) {
-    refresh(window);  // Make sure view + background scale match the window
+    refresh(window);
 
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
-                return 2;
+                return 2;  // Exit code
 
-            // Mouse Hover
+            // Mouse hover
             if (event.type == sf::Event::MouseMoved) {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 for (size_t i = 0; i < options.size(); ++i) {
@@ -42,7 +46,7 @@ int Menu::run(sf::RenderWindow& window) {
                 }
             }
 
-            // Mouse Click
+            // Mouse click
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
                 sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
                 if (options[selectedIndex].getGlobalBounds().contains(mousePos)) {
@@ -58,13 +62,14 @@ int Menu::run(sf::RenderWindow& window) {
                         else
                             window.create(sf::VideoMode(800, 600), "Silent World", sf::Style::Close);
 
-                        refresh(window);  // FIXED: refresh menu display
+                        // Return 1 to indicate we need to recreate the menu
+                        return 1;
                     }
                     if (selectedIndex == 2) return 2; // Exit
                 }
             }
 
-            // Keyboard
+            // Keyboard input
             if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Up) moveUp();
                 else if (event.key.code == sf::Keyboard::Down) moveDown();
@@ -81,7 +86,7 @@ int Menu::run(sf::RenderWindow& window) {
                         else
                             window.create(sf::VideoMode(800, 600), "Silent World", sf::Style::Close);
 
-                        refresh(window);  // ✅ FIXED: refresh menu display
+                        return 1;
                     }
                     else if (selectedIndex == 2) return 2;
                 }
@@ -120,14 +125,23 @@ void Menu::moveDown() {
 }
 
 void Menu::refresh(sf::RenderWindow& window) {
-    // Reset view
     window.setView(window.getDefaultView());
 
-    // Re-load background and scale it based on current window size
     backgroundTexture.loadFromFile("menu-jimi-hendrix.png");
     backgroundSprite.setTexture(backgroundTexture);
     backgroundSprite.setScale(
         static_cast<float>(window.getSize().x) / backgroundTexture.getSize().x,
         static_cast<float>(window.getSize().y) / backgroundTexture.getSize().y
     );
+
+    float spacing = 50.f;
+    float totalHeight = options.size() * spacing;
+    float startY = window.getSize().y - totalHeight - 50.f;
+
+    for (size_t i = 0; i < options.size(); ++i) {
+        sf::Text& text = options[i];
+        float x = 50.f;
+        float y = startY + i * spacing;
+        text.setPosition(x, y);
+    }
 }
