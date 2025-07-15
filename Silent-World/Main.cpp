@@ -20,6 +20,10 @@ int main() {
                 window.close(); // Player closed the window during gameplay
             }
         }
+        else if (selected == 1) {
+            continue; // Returning to Main menu
+        }
+
         else if (selected == 2) { // Exit
             window.close();
         }
